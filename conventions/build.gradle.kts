@@ -8,6 +8,8 @@ repositories {
   mavenCentral()
 }
 
+kotlin { jvmToolchain(21) }
+
 dependencies {
   // These are the plugins your convention plugins will apply.
   // Declare them here as dependencies so they're available at configuration time.
