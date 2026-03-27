@@ -27,3 +27,6 @@ spotless {
     ktfmt()
   }
 }
+
+// fail tests if there are spotless violations
+tasks.withType<Test> { dependsOn("spotlessCheck") }
