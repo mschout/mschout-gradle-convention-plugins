@@ -15,6 +15,11 @@ spotless {
     }
     trimTrailingWhitespace()
     endWithNewline()
+
+    // apply license header file if it exists
+    if (rootProject.file("LICENSE_HEADER").exists()) {
+      licenseHeaderFile(rootProject.file("LICENSE_HEADER"))
+    }
   }
 
   kotlinGradle {
