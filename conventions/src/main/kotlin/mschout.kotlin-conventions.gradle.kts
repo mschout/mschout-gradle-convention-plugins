@@ -7,8 +7,10 @@ group = "com.example"
 
 repositories { mavenCentral() }
 
+val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
+
 kotlin {
-  jvmToolchain(21)
+  jvmToolchain(javaVersion)
   compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") }
 }
 

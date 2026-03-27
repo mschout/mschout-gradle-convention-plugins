@@ -76,6 +76,15 @@ from source via the composite build.
 
 ## Customizing
 
+- **JVM toolchain version**: defaults to 21. Override by setting the
+  `jvmToolchainVersion` Gradle property in your project's `gradle.properties`:
+  ```properties
+  jvmToolchainVersion=17
+  ```
+  or on the command line:
+  ```
+  ./gradlew build -PjvmToolchainVersion=17
+  ```
 - **Change the plugin ID prefix**: rename the `.gradle.kts` files (the filename
   minus `.gradle.kts` becomes the plugin ID).
 - **Add more plugins**: create a new `mschout.foo-conventions.gradle.kts` in the same
