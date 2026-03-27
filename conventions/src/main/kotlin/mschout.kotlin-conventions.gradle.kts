@@ -11,13 +11,13 @@ repositories { mavenCentral() }
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
 
-val jvmTarget = providers.gradleProperty("jvmTarget").getOrElse(javaVersion.toString())
+val jvmTargetVersion = providers.gradleProperty("jvmTarget").getOrElse("$javaVersion")
 
 kotlin {
   jvmToolchain(javaVersion)
   compilerOptions {
     freeCompilerArgs.addAll("-Xjsr305=strict")
-    jvmTarget.set(JvmTarget.fromTarget("$jvmTarget"))
+    jvmTarget.set(JvmTarget.fromTarget(jvmTargetVersion))
   }
 }
 
