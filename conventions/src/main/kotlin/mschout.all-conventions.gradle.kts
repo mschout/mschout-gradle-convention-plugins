@@ -6,4 +6,5 @@ plugins {
   id("mschout.kotlin-conventions")
   id("mschout.spotless-conventions")
   id("mschout.jacoco-conventions")
+  id("mschout.version-catalog-conventions")
 }

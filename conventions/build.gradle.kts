@@ -13,6 +13,7 @@ dependencies {
   // Declare them here as dependencies so they're available at configuration time.
   implementation(libs.kotlin.gradle.plugin)
   implementation(libs.spotless.gradle.plugin)
+  implementation(libs.version.catalog.update.gradle.plugin)
 }
 
 spotless {
