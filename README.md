@@ -6,6 +6,8 @@ composite build in any project to get a consistent setup for:
 - **Kotlin JVM** — toolchain, compiler options, JUnit 5
 - **Spotless** — ktlint formatting for `.kt` and `.gradle.kts` files
 - **JaCoCo** — code coverage with XML + HTML reports
+- **Version Catalog Update** — automated dependency updates for `libs.versions.toml`
+- **Git Versions** — derive project version from Git tags
 
 ## Repository structure
 
@@ -18,6 +20,8 @@ mschout-convention-plugins/
 │       ├── mschout.kotlin-conventions.gradle.kts
 │       ├── mschout.spotless-conventions.gradle.kts
 │       ├── mschout.jacoco-conventions.gradle.kts
+│       ├── mschout.version-catalog-conventions.gradle.kts
+│       ├── mschout.git-versions-conventions.gradle.kts
 │       └── mschout.all-conventions.gradle.kts   # applies all of the above
 ```
 
@@ -66,6 +70,8 @@ from source via the composite build.
 | `mschout.kotlin-conventions`    | Kotlin JVM, toolchain 21, JUnit 5, common deps |
 | `mschout.spotless-conventions`  | Spotless + ktfmt formatting                    |
 | `mschout.jacoco-conventions`    | JaCoCo coverage reports             |
+| `mschout.version-catalog-conventions` | Version catalog updates via [version-catalog-update](https://github.com/littlerobots/version-catalog-update-plugin) |
+| `mschout.git-versions-conventions` | Git-based versioning via [Palantir git-version](https://github.com/palantir/gradle-git-version) |
 | `mschout.all-conventions`       | Applies all of the above                       |
 
 ## Customizing
