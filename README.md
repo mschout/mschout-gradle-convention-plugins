@@ -85,6 +85,14 @@ from source via the composite build.
   ```
   ./gradlew build -PjvmToolchainVersion=17
   ```
+- **JVM target version**: defaults to the toolchain version. Override by setting
+  the `jvmTarget` Gradle property to compile bytecode for a different JVM target
+  than the toolchain. For example, to use a JDK 21 toolchain but produce
+  JDK 17–compatible bytecode:
+  ```properties
+  jvmToolchainVersion=21
+  jvmTarget=17
+  ```
 - **Change the plugin ID prefix**: rename the `.gradle.kts` files (the filename
   minus `.gradle.kts` becomes the plugin ID).
 - **Add more plugins**: create a new `mschout.foo-conventions.gradle.kts` in the same

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 // This plugin ID becomes: mschout.kotlin-conventions
 // Apply it in a consuming project with: id("mschout.kotlin-conventions")
 
@@ -9,9 +11,14 @@ repositories { mavenCentral() }
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
 
+val jvmTarget = providers.gradleProperty("jvmTarget").getOrElse(javaVersion.toString())
+
 kotlin {
   jvmToolchain(javaVersion)
-  compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") }
+  compilerOptions {
+    freeCompilerArgs.addAll("-Xjsr305=strict")
+    jvmTarget.set(JvmTarget.fromTarget("$jvmTarget"))
+  }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
