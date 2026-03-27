@@ -7,4 +7,5 @@ plugins {
   id("mschout.spotless-conventions")
   id("mschout.jacoco-conventions")
   id("mschout.version-catalog-conventions")
+  id("mschout.git-versions-conventions")
 }
