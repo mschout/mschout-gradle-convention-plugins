@@ -20,6 +20,7 @@ dependencies {
 
   // not applied by default but made available
   implementation(libs.gradle.maven.publish.plugin)
+  implementation(libs.dokka.gradle.plugin)
 }
 
 spotless {
