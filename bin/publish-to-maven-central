@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+command -v gum &>/dev/null || { echo "Error: gum is not installed. See https://github.com/charmbracelet/gum" >&2; exit 1; }
+
+die() {
+  gum style --foreground 1 "✗ $1" >&2
+  exit 1
+}
+
+step() {
+  gum style --foreground 4 "→ $1"
+}
+
+ok() {
+  gum style --foreground 2 "✔ $1"
+}
+
+[[ $# -eq 1 ]] || die "Usage: $(basename "$0") <tag>"
+
+tag="$1"
+
+[[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || die "Error: tag must be in the format X.Y.Z (e.g., 1.2.3)"
+
+step "Creating tag ${tag}..."
+git tag -m "v${tag}" "$tag"
+ok "Tag ${tag} created"
+
+step "Pushing to origin..."
+git push origin
+ok "Pushed to origin"
+
+step "Pushing tags to origin..."
+git push --tags origin
+ok "Tags pushed"
+
+step "Publishing to Maven Local..."
+./gradlew publishToMavenLocal
+ok "Published to Maven Local"
+
+step "Publishing to Maven Central..."
+./gradlew publishAndReleaseToMavenCentral
+ok "Published to Maven Central"
+
+gum style --foreground 2 --bold "✔ Release ${tag} complete!"
