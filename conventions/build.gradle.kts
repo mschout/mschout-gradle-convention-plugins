@@ -17,6 +17,9 @@ dependencies {
   implementation(libs.spotless.gradle.plugin)
   implementation(libs.version.catalog.update.gradle.plugin)
   implementation(libs.git.version.gradle.plugin)
+
+  // not applied by default but made available
+  implementation(libs.gradle.maven.publish.plugin)
 }
 
 spotless {

@@ -1,3 +1,3 @@
-rootProject.name = "my-convention-plugins"
+rootProject.name = "mschout-convention-plugins"
 
 include("conventions")
