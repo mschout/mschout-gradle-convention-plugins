@@ -4,7 +4,7 @@ spotless = "8.4.0"
 kotlin = "2.3.20"
 git-version = "5.0.0"
 maven-publish = "0.36.0"
-dokka = "2.0.0"
+dokka = "2.2.0"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
