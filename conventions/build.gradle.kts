@@ -8,7 +8,8 @@ repositories {
   mavenCentral()
 }
 
-kotlin { jvmToolchain(21) }
+val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
+kotlin { jvmToolchain(javaVersion) }
 
 dependencies {
   // These are the plugins your convention plugins will apply.
