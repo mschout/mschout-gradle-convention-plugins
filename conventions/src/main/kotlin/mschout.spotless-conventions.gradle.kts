@@ -15,6 +15,7 @@ spotless {
     }
     trimTrailingWhitespace()
     endWithNewline()
+    toggleOffOn()
 
     // apply license header file if it exists
     if (rootProject.file("LICENSE_HEADER").exists()) {
