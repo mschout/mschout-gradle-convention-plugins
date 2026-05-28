@@ -12,6 +12,11 @@ val validateVersion by tasks.registering {
   }
 }
 
-tasks.withType<AbstractPublishToMaven>().configureEach {
-  dependsOn(validateVersion)
+// Only enforce a clean version when publishing to remote repositories. The local
+// "Private" file repository (build/maven-repo) is throwaway and may receive dirty
+// builds.
+tasks.withType<PublishToMavenRepository>().configureEach {
+  if (!name.endsWith("ToPrivateRepository")) {
+    dependsOn(validateVersion)
+  }
 }
