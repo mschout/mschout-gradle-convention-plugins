@@ -3,14 +3,15 @@ plugins {
   id("org.jetbrains.dokka")
 }
 
-val validateVersion by tasks.registering {
-  doLast {
-    val version = project.version.toString()
-    if (version.endsWith("dirty")) {
-      throw GradleException("Cannot publish a dirty version: $version")
+val validateVersion by
+    tasks.registering {
+      doLast {
+        val version = project.version.toString()
+        if (version.endsWith("dirty")) {
+          throw GradleException("Cannot publish a dirty version: $version")
+        }
+      }
     }
-  }
-}
 
 // Only enforce a clean version when publishing to remote repositories. The local
 // "Private" file repository (build/maven-repo) is throwaway and may receive dirty

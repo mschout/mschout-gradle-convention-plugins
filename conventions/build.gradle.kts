@@ -9,6 +9,7 @@ repositories {
 }
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
+
 kotlin { jvmToolchain(javaVersion) }
 
 dependencies {
