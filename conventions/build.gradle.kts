@@ -42,8 +42,9 @@ spotless {
 
 mavenPublishing {
   // kotlin-dsl applies java-gradle-plugin, so the main artifact and a marker
-  // publication for every precompiled script plugin (mschout.*) are configured
-  // automatically.
+  // publication for every precompiled script plugin (io.github.mschout.*) are
+  // configured automatically. The marker groupId equals the plugin ID, so the
+  // io.github.mschout.* prefix keeps every artifact under the published namespace.
   publishToMavenCentral(automaticRelease = true)
   signAllPublications()
 

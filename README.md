@@ -17,12 +17,12 @@ mschout-convention-plugins/
 ├── conventions/
 │   ├── build.gradle.kts          # declares plugin dependencies
 │   └── src/main/kotlin/
-│       ├── mschout.kotlin-conventions.gradle.kts
-│       ├── mschout.spotless-conventions.gradle.kts
-│       ├── mschout.jacoco-conventions.gradle.kts
-│       ├── mschout.version-catalog-conventions.gradle.kts
-│       ├── mschout.git-versions-conventions.gradle.kts
-│       └── mschout.all-conventions.gradle.kts   # applies all of the above
+│       ├── io.github.mschout.kotlin-conventions.gradle.kts
+│       ├── io.github.mschout.spotless-conventions.gradle.kts
+│       ├── io.github.mschout.jacoco-conventions.gradle.kts
+│       ├── io.github.mschout.version-catalog-conventions.gradle.kts
+│       ├── io.github.mschout.git-versions-conventions.gradle.kts
+│       └── io.github.mschout.all-conventions.gradle.kts   # applies all of the above
 ```
 
 ## Usage in a consuming project
@@ -51,18 +51,20 @@ Then apply the plugins in your `build.gradle.kts`, specifying a version:
 ```kotlin
 // Apply everything at once:
 plugins {
-    id("mschout.all-conventions") version "1.0.0"
+    id("io.github.mschout.all-conventions") version "1.0.0"
 }
 
 // Or pick and choose:
 plugins {
-    id("mschout.kotlin-conventions") version "1.0.0"
-    id("mschout.spotless-conventions") version "1.0.0"
+    id("io.github.mschout.kotlin-conventions") version "1.0.0"
+    id("io.github.mschout.spotless-conventions") version "1.0.0"
 }
 ```
 
 Each plugin ID is resolved via its own published plugin-marker artifact, which
-pulls in the base artifact `io.github.mschout:gradle-convention-plugins`.
+pulls in the base artifact `io.github.mschout:gradle-convention-plugins`. The IDs
+are prefixed with `io.github.mschout` so that every marker artifact lives under
+that (Maven Central–verified) namespace.
 
 ### Option B — Composite build (no publishing)
 
@@ -89,7 +91,7 @@ them from source):
 
 ```kotlin
 plugins {
-    id("mschout.all-conventions")
+    id("io.github.mschout.all-conventions")
 }
 ```
 
@@ -97,12 +99,12 @@ plugins {
 
 | Plugin ID                  | What it does                                   |
 | -------------------------- |------------------------------------------------|
-| `mschout.kotlin-conventions`    | Kotlin JVM, toolchain 21, JUnit 5, common deps |
-| `mschout.spotless-conventions`  | Spotless + ktfmt formatting                    |
-| `mschout.jacoco-conventions`    | JaCoCo coverage reports             |
-| `mschout.version-catalog-conventions` | Version catalog updates via [version-catalog-update](https://github.com/littlerobots/version-catalog-update-plugin) |
-| `mschout.git-versions-conventions` | Git-based versioning via [Palantir git-version](https://github.com/palantir/gradle-git-version) |
-| `mschout.all-conventions`       | Applies all of the above                       |
+| `io.github.mschout.kotlin-conventions`    | Kotlin JVM, toolchain 21, JUnit 5, common deps |
+| `io.github.mschout.spotless-conventions`  | Spotless + ktfmt formatting                    |
+| `io.github.mschout.jacoco-conventions`    | JaCoCo coverage reports             |
+| `io.github.mschout.version-catalog-conventions` | Version catalog updates via [version-catalog-update](https://github.com/littlerobots/version-catalog-update-plugin) |
+| `io.github.mschout.git-versions-conventions` | Git-based versioning via [Palantir git-version](https://github.com/palantir/gradle-git-version) |
+| `io.github.mschout.all-conventions`       | Applies all of the above                       |
 
 ## Customizing
 
@@ -124,11 +126,13 @@ plugins {
   jvmTarget=17
   ```
 - **Change the plugin ID prefix**: rename the `.gradle.kts` files (the filename
-  minus `.gradle.kts` becomes the plugin ID).
-- **Add more plugins**: create a new `mschout.foo-conventions.gradle.kts` in the same
-  directory, add any required Gradle plugin dependencies to
+  minus `.gradle.kts` becomes the plugin ID). Note that a plugin's published
+  marker artifact uses the plugin ID as its Maven group, so the ID must stay
+  under the `io.github.mschout` namespace to be publishable to Maven Central.
+- **Add more plugins**: create a new `io.github.mschout.foo-conventions.gradle.kts`
+  in the same directory, add any required Gradle plugin dependencies to
   `conventions/build.gradle.kts`, and optionally wire it into
-  `mschout.all-conventions.gradle.kts`.
+  `io.github.mschout.all-conventions.gradle.kts`.
 - **Override in a consuming project**: anything set in the convention plugin can
   be overridden in the consuming project's `build.gradle.kts` — Gradle applies
   convention values first, then your project-level config wins.
