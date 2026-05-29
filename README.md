@@ -27,7 +27,46 @@ mschout-convention-plugins/
 
 ## Usage in a consuming project
 
-### 1. Clone this repo alongside your project (or add as a Git submodule)
+There are two ways to consume these plugins: from **Maven Central** (a published
+release) or as a **composite build** (built from source, no publishing).
+
+### Option A — From Maven Central (published release)
+
+The plugins are published under the group `io.github.mschout`. Make Maven Central
+available for plugin resolution in your project's `settings.gradle.kts`:
+
+```kotlin
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "my-app"
+```
+
+Then apply the plugins in your `build.gradle.kts`, specifying a version:
+
+```kotlin
+// Apply everything at once:
+plugins {
+    id("mschout.all-conventions") version "1.0.0"
+}
+
+// Or pick and choose:
+plugins {
+    id("mschout.kotlin-conventions") version "1.0.0"
+    id("mschout.spotless-conventions") version "1.0.0"
+}
+```
+
+Each plugin ID is resolved via its own published plugin-marker artifact, which
+pulls in the base artifact `io.github.mschout:gradle-convention-plugins`.
+
+### Option B — Composite build (no publishing)
+
+Clone this repo alongside your project (or add it as a Git submodule):
 
 ```
 workspace/
@@ -35,7 +74,7 @@ workspace/
 └── my-app/                       ← your project
 ```
 
-### 2. Include it in your project's `settings.gradle.kts`
+Include it in your project's `settings.gradle.kts`:
 
 ```kotlin
 pluginManagement {
@@ -45,23 +84,14 @@ pluginManagement {
 rootProject.name = "my-app"
 ```
 
-### 3. Apply the plugins in your `build.gradle.kts`
+Apply the plugins in your `build.gradle.kts` (no version needed — Gradle builds
+them from source):
 
 ```kotlin
-// Apply everything at once:
 plugins {
     id("mschout.all-conventions")
 }
-
-// Or pick and choose:
-plugins {
-    id("mschout.kotlin-conventions")
-    id("mschout.spotless-conventions")
-}
 ```
-
-That's it. No publishing, no repository hosting — Gradle builds the plugins
-from source via the composite build.
 
 ## Available plugins
 
@@ -102,3 +132,54 @@ from source via the composite build.
 - **Override in a consuming project**: anything set in the convention plugin can
   be overridden in the consuming project's `build.gradle.kts` — Gradle applies
   convention values first, then your project-level config wins.
+
+## Releasing to Maven Central
+
+Publishing is handled by the
+[gradle-maven-publish-plugin](https://vanniktech.github.io/gradle-maven-publish-plugin/),
+configured in `conventions/build.gradle.kts`. Artifacts are published under
+`io.github.mschout` to the [Central Portal](https://central.sonatype.com/).
+
+### Version
+
+The published version is derived from Git tags via
+[Palantir git-version](https://github.com/palantir/gradle-git-version). Tag a
+clean commit to set the release version:
+
+```bash
+git tag 1.0.0
+git push origin 1.0.0
+```
+
+A build with uncommitted changes produces a `…dirty` version; the
+`validateVersion` task refuses to publish it to Maven Central.
+
+### Credentials
+
+The plugin reads these from `~/.gradle/gradle.properties` (or the equivalent
+`ORG_GRADLE_PROJECT_*` environment variables) — **never commit them**:
+
+```properties
+# Central Portal user token (https://central.sonatype.com/account)
+mavenCentralUsername=...
+mavenCentralPassword=...
+
+# GPG signing key, ASCII-armored (exported with `gpg --export-secret-keys --armor`)
+signingInMemoryKey=-----BEGIN PGP PRIVATE KEY BLOCK-----\n...
+signingInMemoryKeyId=12345678
+signingInMemoryKeyPassword=...
+```
+
+### Publish
+
+```bash
+# Stage and automatically release to Maven Central (automaticRelease = true)
+./gradlew :conventions:publishToMavenCentral
+
+# Test the artifacts locally first (installs to ~/.m2)
+./gradlew :conventions:publishToMavenLocal
+```
+
+This publishes the base artifact `io.github.mschout:gradle-convention-plugins`
+plus a plugin-marker artifact for every `mschout.*` plugin, so consumers can
+resolve them by ID with a `version`.

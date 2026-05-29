@@ -16,3 +16,5 @@ version-catalog-update-gradle-plugin = { module = "nl.littlerobots.version-catal
 
 [plugins]
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+git-version = { id = "com.palantir.git-version", version.ref = "git-version" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

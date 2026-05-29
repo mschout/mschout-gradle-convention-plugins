@@ -1,12 +1,20 @@
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.spotless)
+  alias(libs.plugins.git.version)
+  alias(libs.plugins.maven.publish)
 }
 
 repositories {
   gradlePluginPortal()
   mavenCentral()
 }
+
+val gitVersion: groovy.lang.Closure<String> by extra
+
+group = "io.github.mschout"
+
+version = gitVersion()
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
 
@@ -29,5 +37,58 @@ spotless {
   kotlinGradle {
     target("*.gradle.kts", "**/*.gradle.kts")
     ktfmt()
+  }
+}
+
+mavenPublishing {
+  // kotlin-dsl applies java-gradle-plugin, so the main artifact and a marker
+  // publication for every precompiled script plugin (mschout.*) are configured
+  // automatically.
+  publishToMavenCentral(automaticRelease = true)
+  signAllPublications()
+
+  coordinates("io.github.mschout", "gradle-convention-plugins", version.toString())
+
+  pom {
+    name.set("mschout Gradle convention plugins")
+    description.set("Reusable Gradle convention plugins for Kotlin projects.")
+    url.set("https://github.com/mschout/mschout-gradle-convention-plugins")
+    licenses {
+      license {
+        name.set("The Apache License, Version 2.0")
+        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+      }
+    }
+    developers {
+      developer {
+        id.set("mschout")
+        name.set("Michael Schout")
+        email.set("admin@schouttech.com")
+      }
+    }
+    scm {
+      url.set("https://github.com/mschout/mschout-gradle-convention-plugins")
+      connection.set("scm:git:https://github.com/mschout/mschout-gradle-convention-plugins.git")
+      developerConnection.set(
+          "scm:git:ssh://git@github.com/mschout/mschout-gradle-convention-plugins.git"
+      )
+    }
+  }
+}
+
+// Refuse to release a version derived from a dirty working tree to Maven Central.
+val validateVersion by
+    tasks.registering {
+      doLast {
+        val v = project.version.toString()
+        if (v.endsWith("dirty")) {
+          throw GradleException("Refusing to publish a dirty version: $v")
+        }
+      }
+    }
+
+tasks.withType<PublishToMavenRepository>().configureEach {
+  if (name.endsWith("ToMavenCentralRepository")) {
+    dependsOn(validateVersion)
   }
 }
