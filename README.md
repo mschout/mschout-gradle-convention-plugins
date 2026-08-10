@@ -106,25 +106,38 @@ plugins {
 | `io.github.mschout.git-versions-conventions` | Git-based versioning via [Palantir git-version](https://github.com/palantir/gradle-git-version) |
 | `io.github.mschout.all-conventions`       | Applies all of the above                       |
 
+## Configuration via `gradle.properties`
+
+The convention plugins read the following Gradle properties from the consuming
+project's `gradle.properties` (or `-P` on the command line, or an
+`ORG_GRADLE_PROJECT_*` environment variable):
+
+| Property              | Default            | Used by              | What it does |
+| --------------------- | ------------------ | -------------------- | ------------ |
+| `jvmToolchainVersion` | `21`               | `kotlin-conventions` | The JDK version used to compile and run (the [JVM toolchain](https://docs.gradle.org/current/userguide/toolchains.html)). |
+| `jvmTarget`           | `jvmToolchainVersion` | `kotlin-conventions` | The JVM bytecode target for both `javac` (via `--release`) and the Kotlin compiler. Set this lower than the toolchain to build with a newer JDK while producing bytecode (and API usage) compatible with an older JVM. |
+
+For example, to build with a JDK 21 toolchain but produce JDK 17–compatible
+bytecode:
+
+```properties
+jvmToolchainVersion=21
+jvmTarget=17
+```
+
+Or on the command line:
+
+```
+./gradlew build -PjvmToolchainVersion=21 -PjvmTarget=17
+```
+
+No other properties are consumed by the plugins. (The Maven Central credential
+properties described under [Releasing to Maven Central](#releasing-to-maven-central)
+apply only when publishing this repo itself, and belong in
+`~/.gradle/gradle.properties`, never in the project.)
+
 ## Customizing
 
-- **JVM toolchain version**: defaults to 21. Override by setting the
-  `jvmToolchainVersion` Gradle property in your project's `gradle.properties`:
-  ```properties
-  jvmToolchainVersion=17
-  ```
-  or on the command line:
-  ```
-  ./gradlew build -PjvmToolchainVersion=17
-  ```
-- **JVM target version**: defaults to the toolchain version. Override by setting
-  the `jvmTarget` Gradle property to compile bytecode for a different JVM target
-  than the toolchain. For example, to use a JDK 21 toolchain but produce
-  JDK 17–compatible bytecode:
-  ```properties
-  jvmToolchainVersion=21
-  jvmTarget=17
-  ```
 - **Change the plugin ID prefix**: rename the `.gradle.kts` files (the filename
   minus `.gradle.kts` becomes the plugin ID). Note that a plugin's published
   marker artifact uses the plugin ID as its Maven group, so the ID must stay
