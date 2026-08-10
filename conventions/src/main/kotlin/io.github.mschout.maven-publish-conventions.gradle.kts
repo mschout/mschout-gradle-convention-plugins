@@ -3,8 +3,8 @@ plugins {
   id("org.jetbrains.dokka")
 }
 
-val validateVersion by
-    tasks.registering {
+val validateVersion =
+    tasks.register("validateVersion") {
       doLast {
         val version = project.version.toString()
         if (version.endsWith("dirty")) {

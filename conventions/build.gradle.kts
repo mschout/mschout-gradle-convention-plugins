@@ -10,11 +10,11 @@ repositories {
   mavenCentral()
 }
 
-val gitVersion: groovy.lang.Closure<String> by extra
+val gitVersion = extra["gitVersion"] as groovy.lang.Closure<*>
 
 group = "io.github.mschout"
 
-version = gitVersion()
+version = gitVersion.call().toString()
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
 
@@ -78,8 +78,8 @@ mavenPublishing {
 }
 
 // Refuse to release a version derived from a dirty working tree to Maven Central.
-val validateVersion by
-    tasks.registering {
+val validateVersion =
+    tasks.register("validateVersion") {
       doLast {
         val v = project.version.toString()
         if (v.endsWith("dirty")) {
