@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*" # matches 0.5.0, 1.0.0-rc1, etc. (no v prefix)
+
+permissions:
+  contents: write # required to create releases
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + all tags, needed for the changelog range
+
+      - name: Create GitHub release with changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          # Previous tag by version order, excluding the tag being released
+          prev=$(git tag --sort=-v:refname | grep -Fxv "$tag" | head -n1 || true)
+          if [ -n "$prev" ]; then
+            range="$prev..$tag"
+            compare_line="**Full diff**: https://github.com/$GITHUB_REPOSITORY/compare/$prev...$tag"
+          else
+            range="$tag" # first release: include all history
+            compare_line=""
+          fi
+          {
+            echo "## Changes"
+            echo
+            git log --no-merges --pretty=format:'- %s (%h)' "$range"
+            echo
+            echo
+            echo "$compare_line"
+          } > notes.md
+          gh release create "$tag" --title "$tag" --notes-file notes.md
