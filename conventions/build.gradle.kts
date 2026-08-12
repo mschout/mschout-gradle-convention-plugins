@@ -1,3 +1,7 @@
+import java.io.ByteArrayOutputStream
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
+
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.spotless)
@@ -92,4 +96,55 @@ tasks.withType<PublishToMavenRepository>().configureEach {
   if (name.endsWith("ToMavenCentralRepository")) {
     dependsOn(validateVersion)
   }
+}
+
+// Inline copy of io.github.mschout.gradle.ReleaseTask (this build compiles that
+// class, so it can't apply it to itself). Keep the two in sync.
+@UntrackedTask(because = "Releasing tags and pushes; it must always run")
+abstract class ReleaseTask @Inject constructor(private val execOps: ExecOperations) :
+    DefaultTask() {
+  @get:Input @get:Optional abstract val releaseVersion: Property<String>
+
+  @get:Internal abstract val rootDir: DirectoryProperty
+
+  @TaskAction
+  fun release() {
+    val version =
+        releaseVersion.orNull
+            ?: throw GradleException(
+                "No release version given. Usage: ./gradlew release -PreleaseVersion=x.y.z"
+            )
+
+    val workDir = rootDir.get().asFile
+
+    val status = ByteArrayOutputStream()
+    execOps.exec {
+      workingDir = workDir
+      commandLine("git", "status", "--porcelain")
+      standardOutput = status
+    }
+    if (status.toString().isNotBlank()) {
+      throw GradleException("Working tree is dirty; commit or stash before releasing.")
+    }
+
+    fun git(vararg args: String) {
+      execOps.exec {
+        workingDir = workDir
+        commandLine("git", *args)
+      }
+    }
+
+    git("tag", "-a", version, "-m", "v$version")
+    git("push", "origin")
+    git("push", "origin", "--tags")
+  }
+}
+
+// Tag and push a release: ./gradlew release -PreleaseVersion=x.y.z
+// Then publish with: ./gradlew publishAndReleaseToMavenCentral
+tasks.register<ReleaseTask>("release") {
+  group = "publishing"
+  description = "Tags releaseVersion and pushes the branch and tags."
+  releaseVersion.set(providers.gradleProperty("releaseVersion"))
+  rootDir.set(project.rootDir)
 }

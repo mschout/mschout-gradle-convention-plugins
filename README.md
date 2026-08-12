@@ -104,7 +104,8 @@ plugins {
 | `io.github.mschout.jacoco-conventions`    | JaCoCo coverage reports             |
 | `io.github.mschout.version-catalog-conventions` | Version catalog updates via [version-catalog-update](https://github.com/littlerobots/version-catalog-update-plugin) |
 | `io.github.mschout.git-versions-conventions` | Git-based versioning via [Palantir git-version](https://github.com/palantir/gradle-git-version) |
-| `io.github.mschout.all-conventions`       | Applies all of the above                       |
+| `io.github.mschout.maven-publish-conventions` | Maven Central publishing via [gradle-maven-publish-plugin](https://vanniktech.github.io/gradle-maven-publish-plugin/) + Dokka, plus a tag-and-push `release` task |
+| `io.github.mschout.all-conventions`       | Applies all of the above (except `maven-publish-conventions`) |
 
 ## Configuration via `gradle.properties`
 
@@ -160,16 +161,27 @@ configured in `conventions/build.gradle.kts`. Artifacts are published under
 ### Version
 
 The published version is derived from Git tags via
-[Palantir git-version](https://github.com/palantir/gradle-git-version). Tag a
-clean commit to set the release version:
-
-```bash
-git tag 1.0.0
-git push origin 1.0.0
-```
+[Palantir git-version](https://github.com/palantir/gradle-git-version). Tags
+are bare versions with no `v` prefix (e.g. `1.0.0`).
 
 A build with uncommitted changes produces a `…dirty` version; the
 `validateVersion` task refuses to publish it to Maven Central.
+
+### Release
+
+The `release` task tags the (clean) HEAD and pushes the branch and tags. Then
+publish in a separate invocation — git-version resolves the project version at
+configuration time, so the new tag must exist before the publishing build is
+configured:
+
+```bash
+./gradlew release -PreleaseVersion=1.0.0
+./gradlew publishAndReleaseToMavenCentral
+```
+
+Pushing the tag also triggers the GitHub Release workflow, which generates the
+changelog. The same task is available to consumers of
+`io.github.mschout.maven-publish-conventions`.
 
 ### Credentials
 
