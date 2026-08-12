@@ -33,7 +33,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 tasks.withType<Test>().configureEach { useJUnitPlatform() }
 
 dependencies {
-  testImplementation(platform("org.junit:junit-bom:5.11.3"))
+  testImplementation(platform("org.junit:junit-bom:5.14.4"))
   testImplementation("org.junit.jupiter:junit-jupiter")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
