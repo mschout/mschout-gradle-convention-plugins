@@ -6,7 +6,7 @@ plugins {
   jacoco
 }
 
-jacoco { toolVersion = "0.8.13" }
+jacoco { toolVersion = "0.8.15" }
 
 tasks.withType<Test>() { finalizedBy("jacocoTestReport") }
 
