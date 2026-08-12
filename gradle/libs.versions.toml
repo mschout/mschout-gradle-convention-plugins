@@ -1,20 +1,20 @@
 [versions]
+axion-release = "1.21.3"
 dokka = "2.2.0"
-git-version = "5.0.0"
 kotlin = "2.4.10"
 maven-publish = "0.37.0"
 spotless = "8.9.0"
 version-catalog-update = "1.1.1"
 
 [libraries]
+axion-release-gradle-plugin = { module = "pl.allegro.tech.build:axion-release-plugin", version.ref = "axion-release" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-git-version-gradle-plugin = { module = "com.palantir.gradle.gitversion:gradle-git-version", version.ref = "git-version" }
 gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 spotless-gradle-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 version-catalog-update-gradle-plugin = { module = "nl.littlerobots.version-catalog-update:nl.littlerobots.version-catalog-update.gradle.plugin", version.ref = "version-catalog-update" }
 
 [plugins]
+axion-release = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion-release" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-git-version = { id = "com.palantir.git-version", version.ref = "git-version" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

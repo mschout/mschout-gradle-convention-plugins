@@ -7,7 +7,7 @@ composite build in any project to get a consistent setup for:
 - **Spotless** — ktlint formatting for `.kt` and `.gradle.kts` files
 - **JaCoCo** — code coverage with XML + HTML reports
 - **Version Catalog Update** — automated dependency updates for `libs.versions.toml`
-- **Git Versions** — derive project version from Git tags
+- **Git Versions** — derive project version from Git tags, with a `release` task for tagging (axion-release)
 
 ## Repository structure
 
@@ -103,7 +103,8 @@ plugins {
 | `io.github.mschout.spotless-conventions`  | Spotless + ktfmt formatting                    |
 | `io.github.mschout.jacoco-conventions`    | JaCoCo coverage reports             |
 | `io.github.mschout.version-catalog-conventions` | Version catalog updates via [version-catalog-update](https://github.com/littlerobots/version-catalog-update-plugin) |
-| `io.github.mschout.git-versions-conventions` | Git-based versioning via [Palantir git-version](https://github.com/palantir/gradle-git-version) |
+| `io.github.mschout.git-versions-conventions` | Git-based versioning and a `release` task via [axion-release](https://github.com/allegro/axion-release-plugin) |
+| `io.github.mschout.maven-publish-conventions` | Maven Central publishing via [gradle-maven-publish-plugin](https://vanniktech.github.io/gradle-maven-publish-plugin/) + Dokka; includes `git-versions-conventions` |
 | `io.github.mschout.all-conventions`       | Applies all of the above                       |
 
 ## Configuration via `gradle.properties`
@@ -160,16 +161,31 @@ configured in `conventions/build.gradle.kts`. Artifacts are published under
 ### Version
 
 The published version is derived from Git tags via
-[Palantir git-version](https://github.com/palantir/gradle-git-version). Tag a
-clean commit to set the release version:
+[axion-release](https://github.com/allegro/axion-release-plugin), using bare
+version tags with no `v` prefix (e.g. `1.0.0`). A clean, tagged commit builds
+as `1.0.0`; any other state builds as `1.0.1-SNAPSHOT`, and the
+`validateVersion` task refuses to publish a snapshot to Maven Central.
+
+To cut a release, let axion bump the version, create the tag, and push it:
 
 ```bash
-git tag 1.0.0
-git push origin 1.0.0
+# patch bump (0.6.0 -> 0.6.1), creates and pushes the tag
+./gradlew release
+
+# minor/major bump, or an explicit version
+./gradlew release -Prelease.versionIncrementer=incrementMinor
+./gradlew release -Prelease.forceVersion=1.0.0
 ```
 
-A build with uncommitted changes produces a `…dirty` version; the
-`validateVersion` task refuses to publish it to Maven Central.
+Then publish from the freshly tagged commit (a separate invocation, so the
+version is re-resolved from the new tag):
+
+```bash
+./gradlew publishAndReleaseToMavenCentral
+```
+
+Pushing the tag also triggers the GitHub Release workflow, which generates the
+changelog.
 
 ### Credentials
 

@@ -1,7 +1,7 @@
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.spotless)
-  alias(libs.plugins.git.version)
+  alias(libs.plugins.axion.release)
   alias(libs.plugins.maven.publish)
 }
 
@@ -10,11 +10,15 @@ repositories {
   mavenCentral()
 }
 
-val gitVersion = extra["gitVersion"] as groovy.lang.Closure<*>
+scmVersion {
+  // Existing tags (and the Release workflow trigger) use bare versions like
+  // "0.6.0" rather than axion's default "v" prefix.
+  tag { prefix.set("") }
+}
 
 group = "io.github.mschout"
 
-version = gitVersion.call().toString()
+version = scmVersion.version
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
 
@@ -26,7 +30,7 @@ dependencies {
   implementation(libs.kotlin.gradle.plugin)
   implementation(libs.spotless.gradle.plugin)
   implementation(libs.version.catalog.update.gradle.plugin)
-  implementation(libs.git.version.gradle.plugin)
+  implementation(libs.axion.release.gradle.plugin)
 
   // not applied by default but made available
   implementation(libs.gradle.maven.publish.plugin)
@@ -77,13 +81,15 @@ mavenPublishing {
   }
 }
 
-// Refuse to release a version derived from a dirty working tree to Maven Central.
+// Refuse to release an untagged (snapshot) version to Maven Central. axion-release
+// yields "x.y.z" only when HEAD sits on a clean, tagged commit; anything else
+// resolves to "x.y.z-SNAPSHOT".
 val validateVersion =
     tasks.register("validateVersion") {
       doLast {
         val v = project.version.toString()
-        if (v.endsWith("dirty")) {
-          throw GradleException("Refusing to publish a dirty version: $v")
+        if (v.endsWith("-SNAPSHOT")) {
+          throw GradleException("Refusing to publish a snapshot version: $v")
         }
       }
     }

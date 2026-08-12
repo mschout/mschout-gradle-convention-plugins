@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          # git-version derives the project version from tags, so it needs
+          # axion-release derives the project version from tags, so it needs
           # the full history rather than a shallow clone.
           fetch-depth: 0
 
