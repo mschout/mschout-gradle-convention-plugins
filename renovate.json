@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group all non-major dependency updates into a single PR",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "non-major dependencies"
+    },
+    {
+      "description": "Keep Kotlin updates separate since consumers depend on the embedded Kotlin plugin version",
+      "matchPackageNames": ["org.jetbrains.kotlin:kotlin-gradle-plugin"],
+      "groupName": "kotlin"
+    }
+  ]
+}
