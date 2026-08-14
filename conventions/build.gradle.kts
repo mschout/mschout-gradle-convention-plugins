@@ -1,6 +1,7 @@
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import org.gradle.process.ExecOperations
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   `kotlin-dsl`
@@ -21,8 +22,16 @@ group = "io.github.mschout"
 version = gitVersion.call().toString()
 
 val javaVersion = providers.gradleProperty("jvmToolchainVersion").getOrElse("21").toInt()
+val jvmTargetVersion = providers.gradleProperty("jvmTarget").getOrElse("$javaVersion")
 
-kotlin { jvmToolchain(javaVersion) }
+kotlin {
+  jvmToolchain(javaVersion)
+  compilerOptions { jvmTarget.set(JvmTarget.fromTarget(jvmTargetVersion)) }
+}
+
+// Keep javac in sync with Kotlin's jvmTarget so the shipped plugin runs on older JVMs
+// even when built with a newer toolchain.
+tasks.withType<JavaCompile>().configureEach { options.release.set(jvmTargetVersion.toInt()) }
 
 dependencies {
   // These are the plugins your convention plugins will apply.
