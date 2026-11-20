@@ -4,6 +4,11 @@
     "config:recommended"
   ],
   "labels": ["dependencies"],
+  "automerge": true,
+  "automergeType": "pr",
+  "platformAutomerge": false,
+  "pruneBranchAfterAutomerge": true,
+  "pruneStaleBranches": true,
   "packageRules": [
     {
       "description": "Group all non-major dependency updates into a single PR",

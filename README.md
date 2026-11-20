@@ -151,6 +151,15 @@ apply only when publishing this repo itself, and belong in
   be overridden in the consuming project's `build.gradle.kts` — Gradle applies
   convention values first, then your project-level config wins.
 
+## Dependency updates
+
+Renovate automatically merges its PRs, including major updates, after CI passes.
+The merge closes the PR, and Renovate deletes the source branch. Renovate also
+closes obsolete PRs and deletes its stale branches.
+
+Renovate performs the merges itself (`platformAutomerge: false`), so merging and
+cleanup happen during Renovate runs rather than immediately when CI finishes.
+
 ## Releasing to Maven Central
 
 Publishing is handled by the
