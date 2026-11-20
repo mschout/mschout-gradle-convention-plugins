@@ -84,7 +84,7 @@ mavenPublishing {
       url.set("https://github.com/mschout/mschout-gradle-convention-plugins")
       connection.set("scm:git:https://github.com/mschout/mschout-gradle-convention-plugins.git")
       developerConnection.set(
-          "scm:git:ssh://git@github.com/mschout/mschout-gradle-convention-plugins.git"
+          "scm:git:ssh://git@github.com/mschout/mschout-gradle-convention-plugins.git",
       )
     }
   }
@@ -121,7 +121,7 @@ abstract class ReleaseTask @Inject constructor(private val execOps: ExecOperatio
     val version =
         releaseVersion.orNull
             ?: throw GradleException(
-                "No release version given. Usage: ./gradlew release -PreleaseVersion=x.y.z"
+                "No release version given. Usage: ./gradlew release -PreleaseVersion=x.y.z",
             )
 
     val workDir = rootDir.get().asFile
